@@ -1,0 +1,52 @@
+import pygame
+
+pygame.init()
+
+# Screen dimensions
+screen_width, screen_height = 800, 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Car Racing Game")
+
+clock = pygame.time.Clock()
+running = True
+car_width, car_height = 50, 100
+car_x, car_y = (screen_width // 2 - car_width // 2), (screen_height - car_height - 10)
+car_speed = 5
+import random
+opponent_car_x = random.randint(0, screen_width - car_width)
+opponent_car_y = -car_height
+opponent_speed = 7
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT] and car_x > 0:
+        car_x -= car_speed
+    if keys[pygame.K_RIGHT] and car_x < screen_width - car_width:
+        car_x += car_speed
+
+    # Move opponent car
+    opponent_car_y += opponent_speed
+    if opponent_car_y > screen_height:
+        opponent_car_y = -car_height
+        opponent_car_x = random.randint(0, screen_width - car_width)
+
+    # Collision detection
+    if (car_y < opponent_car_y + car_height and
+            car_y + car_height > opponent_car_y and
+            car_x < opponent_car_x + car_width and
+            car_x + car_width > opponent_car_x):
+        print("Collision! Game Over.")
+        running = False
+
+    # Rendering
+    screen.fill((0, 0, 0))  # Clear screen
+    pygame.draw.rect(screen, (0, 255, 0), (car_x, car_y, car_width, car_height))  # Player car
+    pygame.draw.rect(screen, (255, 0, 0), (opponent_car_x, opponent_car_y, car_width, car_height))  # Opponent car
+    pygame.display.flip()  # Update display
+
+    clock.tick(30)  # 30 FPS
+
+pygame.quit()
